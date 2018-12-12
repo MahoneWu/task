@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"sync"
 	"time"
 	"tlsdemo/task/common"
@@ -12,42 +11,44 @@ import (
 	"tlsdemo/task/tlsclient"
 )
 
-func main(){
-	//lparma := loginParam(common.JionStr("test",strconv.Itoa(4997),""), "123")
-
+func main() {
+	/**
 	lparma := loginParam(common.JionStr("test",strconv.Itoa(4998),""), "123")
 	token := tlsclient.Login(lparma)
 	fmt.Println("---",token)
+	*/
+
+	token := "793df21ec43572357bdd3a2dc9711078"
 
 	t1 := time.Now()
 	var wg sync.WaitGroup
-	for i := 0; i < 200; i++{
+	for i := 0; i < 1; i++ {
 		wg.Add(1)
-		go toWriteData(token,i, &wg)
+		go toWriteData(token, i, &wg)
 	}
 	wg.Wait()
 	t2 := time.Now()
-	fmt.Println("-----time diff",t2.Sub(t1))
+	fmt.Println("-----time diff", t2.Sub(t1))
 }
 
-
-func toWriteData(token string,group int, wg *sync.WaitGroup){
+func toWriteData(token string, group int, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for i:=0 ;i < 100;i++{
-		//key := common.RandSeq(1000)
-		//value := common.RandSeq(1000)
+	for i := 0; i < 1; i++ {
+		key := common.RandSeq(1000)
+		value := common.RandSeq(1000)
 		//fmt.Println(fmt.Sprintf("%d:%d", group, i))
-		parma := writeParam(fmt.Sprintf("%d:%d", group, i),fmt.Sprintf("%d:%d", group, i),token)
-		//parma := writeParam(key,value,token)
+		//parma := writeParam(fmt.Sprintf("%d:%d", group, i),fmt.Sprintf("%d:%d", group, i),token)
+		parma := WriteParam(key, value, token)
+
 		fmt.Println(parma)
+		fmt.Println("--Len", len([]byte(parma)))
+
 		writeResponse := tlsclient.WriteMessage(parma)
-		fmt.Println("---Response",writeResponse)
+		fmt.Println("---Response", writeResponse)
 	}
 }
 
-
-
-func writeParam(paramKey string,paramValue string,paramToken string) string{
+func WriteParam(paramKey string, paramValue string, paramToken string) string {
 	param := "WriteSecureMessage/"
 	key := "key="
 	key += paramKey
@@ -58,40 +59,36 @@ func writeParam(paramKey string,paramValue string,paramToken string) string{
 	token := "token="
 	token += paramToken
 
-	body1 := common.JionStr(key, value,"&")
-	body2 := common.JionStr(body1, token,"&")
-	requestParam := common.JionStr(param, body2,"")
+	body1 := common.JionStr(key, value, "&")
+	body2 := common.JionStr(body1, token, "&")
+	requestParam := common.JionStr(param, body2, "")
 
 	//fmt.Println("byte=",len([]byte(requestParam)))
 
 	return requestParam
 }
 
-func readParam(paramKey string,paramToken string) string{
+func readParam(paramKey string, paramToken string) string {
 	param := "ReadSecureMessage/"
 	key := "key="
 	key += paramKey
 
-
 	token := "token="
 	token += paramToken
 
-	body := common.JionStr(key, token,"&")
-	requestParam := common.JionStr(param, body,"")
+	body := common.JionStr(key, token, "&")
+	requestParam := common.JionStr(param, body, "")
 
 	return requestParam
 }
 
-
-
-
-func loginParam(nameParam string,passwordParam string) string{
+func loginParam(nameParam string, passwordParam string) string {
 	name := "Login/name="
 	name += nameParam
 
 	password := "password="
 	password += passwordParam
 
-	transportData := common.JionStr(name, password,"&")
+	transportData := common.JionStr(name, password, "&")
 	return transportData
 }
