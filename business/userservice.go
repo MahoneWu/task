@@ -78,6 +78,7 @@ func WriteMessage(token string ,key string, value string)(string){
 	//write limit key，composed of userId and time
 	writeLimitKey := common.AddStringWithBuff(WRITE,strconv.Itoa(userId),strconv.FormatInt(time.Now().Unix(), 10),"_")
 
+	fmt.Println("writeSpeed = ",writeSpeed)
 
 	//limitStr := "10_1544509508"
 	count,_ := redis.Int(conn.Do("GET", writeLimitKey))

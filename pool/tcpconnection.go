@@ -9,7 +9,6 @@ import (
 	"log"
 	"net"
 	"sync"
-	"sync/atomic"
 	"time"
 	"tlsdemo/task/common"
 )
@@ -92,8 +91,10 @@ func (cp *ConnPool) Acquire() (net.Conn, error) {
 					connRes.conn.Close();
 					continue;
 				}
+				/**
 				atomic.AddInt32(&count, 1)
 				fmt.Println("connection count ", count)
+				*/
 				return connRes.conn, nil;
 			}
 		}

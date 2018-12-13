@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 	"tlsdemo/task/common"
@@ -12,17 +13,17 @@ import (
 )
 
 func main() {
-	/**
-	lparma := loginParam(common.JionStr("test",strconv.Itoa(4998),""), "123")
+
+	lparma := loginParam(common.JionStr("test",strconv.Itoa(5000),""), "123")
 	token := tlsclient.Login(lparma)
 	fmt.Println("---",token)
-	*/
 
-	token := "793df21ec43572357bdd3a2dc9711078"
+
+	//token := "793df21ec43572357bdd3a2dc9711078"
 
 	t1 := time.Now()
 	var wg sync.WaitGroup
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 200; i++ {
 		wg.Add(1)
 		go toWriteData(token, i, &wg)
 	}
@@ -33,18 +34,23 @@ func main() {
 
 func toWriteData(token string, group int, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 100; i++ {
 		key := common.RandSeq(1000)
 		value := common.RandSeq(1000)
 		//fmt.Println(fmt.Sprintf("%d:%d", group, i))
 		//parma := writeParam(fmt.Sprintf("%d:%d", group, i),fmt.Sprintf("%d:%d", group, i),token)
 		parma := WriteParam(key, value, token)
 
-		fmt.Println(parma)
-		fmt.Println("--Len", len([]byte(parma)))
+		//fmt.Println(parma)
+		//fmt.Println("--Len", len([]byte(parma)))
 
 		writeResponse := tlsclient.WriteMessage(parma)
 		fmt.Println("---Response", writeResponse)
+
+		readParam := readParam(key,token)
+		readResponse := tlsclient.WriteMessage(readParam)
+		fmt.Println("---read",readResponse,"---",value)
+
 	}
 }
 
